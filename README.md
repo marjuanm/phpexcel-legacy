@@ -3,7 +3,7 @@
     <a href="https://github.com/marjuanm/phpexcel-legacy/blob/main/CHANGELOG"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/release.png?v=1" height="20" alt="Release version"></a>
     <a href="https://github.com/marjuanm/phpexcel-legacy/archive/refs/heads/main.zip"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/download.png?v=2" height="20" alt="Download current version"></a>
     <a href="https://github.com/marjuanm/phpexcel-legacy/blob/main/LICENSE"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/license.png" height="20" alt="Project's license"></a>
-    <a href="https://software.webxpress.top/projects/phpexcel-legacy/wiki/getting-started/" target="_blank"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/examples.png" height="20" alt="Examples"></a>
+    <a href="https://github.com/marjuanm/phpexcel-legacy/Examples" target="_blank"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/examples.png" height="20" alt="Examples"></a>
 </p>
 
 # What is PHPExcel legacy?
