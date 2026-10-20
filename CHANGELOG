@@ -1,0 +1,3 @@
+0.1.0
+
+- Initiate the legacy PHPExcel project with the goal of maintaining and updating PHPExcel to be compatible with PHP 8+.
