@@ -43,7 +43,7 @@ These errors will be addressed gradually as they are discovered and the legacy c
 
 # ❤️ Donations & community support
 
-If you don’t wish to purchase a commercial license but would like to support this project, thank you very much in advance. You may donate any amount you wish—any contribution is greatly appreciated; please select one of the following methods.
+You may donate any amount you wish—any contribution is greatly appreciated; please select one of the following methods.
 
 * ⭐ <a href="https://github.com/sponsors/marjuanm?frequency=recurring" target="_blank">GitHub Sponsors</a>
 * ☕ <a href="https://ko-fi.com/msproys" target="_blank">Ko-fi</a>
