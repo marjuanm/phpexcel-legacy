@@ -1,7 +1,7 @@
 <p align="center">
-    <img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/logo.png?v=2" width="auto" height="331" alt="PHPExcel legacy"></a><br>
-    <a href="https://github.com/marjuanm/phpexcel-legacy/blob/main/CHANGELOG"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/release.png?v=16" height="20" alt="Release version"></a>
-    <a href="https://github.com/marjuanm/phpexcel-legacy/archive/refs/heads/main.zip"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/latest.png?v=2" height="20" alt="Download current version"></a>
+    <img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/logo.png?v=1" width="auto" height="331" alt="PHPExcel legacy"></a><br>
+    <a href="https://github.com/marjuanm/phpexcel-legacy/blob/main/CHANGELOG"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/release.png?v=1" height="20" alt="Release version"></a>
+    <a href="https://github.com/marjuanm/phpexcel-legacy/archive/refs/heads/main.zip"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/download.png?v=2" height="20" alt="Download current version"></a>
     <a href="https://github.com/marjuanm/phpexcel-legacy/blob/main/LICENSE"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/license.png" height="20" alt="Project's license"></a>
     <a href="https://software.webxpress.top/projects/phpexcel-legacy/wiki/getting-started/" target="_blank"><img src="https://www.busquedaweb.com/openprojects/phpexcel-legacy/examples.png" height="20" alt="Examples"></a>
 </p>
@@ -45,9 +45,9 @@ These errors will be addressed gradually as they are discovered and the legacy c
 
 If you don’t wish to purchase a commercial license but would like to support this project, thank you very much in advance. You may donate any amount you wish—any contribution is greatly appreciated; please select one of the following methods.
 
-⭐ <a href="https://github.com/sponsors/marjuanm?frequency=recurring" target="_blank">GitHub Sponsors</a>
-☕ <a href="https://ko-fi.com/msproys" target="_blank">Ko-fi</a>
-💳 <a href="https://www.paypal.com/donate/?business=73JT73SJF2HXY&amount=1&no_recurring=0&item_name=Thank+you+for+donating+and+supporting+PHPExcel+legacy+projects.Many+thanks%21&currency_code=USD" target="_blank">PayPal</a>
+* ⭐ <a href="https://github.com/sponsors/marjuanm?frequency=recurring" target="_blank">GitHub Sponsors</a>
+* ☕ <a href="https://ko-fi.com/msproys" target="_blank">Ko-fi</a>
+* 💳 <a href="https://www.paypal.com/donate/?business=73JT73SJF2HXY&amount=1&no_recurring=0&item_name=Thank+you+for+donating+and+supporting+PHPExcel+legacy+projects.Many+thanks%21&currency_code=USD" target="_blank">PayPal</a>
 
 We kindly ask you to observe the following guidelines so that we can provide you with the best possible technical support.
 
