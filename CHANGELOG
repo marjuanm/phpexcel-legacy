@@ -1,3 +1,7 @@
+0.1.1
+
+- Minor update: only the structure of the files that were updated has been formatted to ensure compatibility with PHP 8+.
+
 0.1.0
 
 - Initiate the legacy PHPExcel project with the goal of maintaining and updating PHPExcel to be compatible with PHP 8+.
