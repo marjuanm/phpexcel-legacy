@@ -15,9 +15,9 @@ At present, it's capable of creating basic Excel files in a PHP 8+ environment; 
 
 The intention is not to keep the library up-to-date with the latest standards, but rather to provide continuity for legacy applications—specifically those that cannot or do not wish to migrate or rewrite their code, yet still require a way to export data into the Microsoft Excel format.
 
-# 🚀 Updates for the latest version (0.1.0):
+# 🚀 Updates for the latest version (0.1.1):
 
-This is the initial version of the project; it's based entirely on the source code of the final version of PHPExcel, which was discontinued as of 2015.
+Minor update: only the structure of the files that were updated has been formatted to ensure compatibility with PHP 8+.
 
 # 📋 License:
 
