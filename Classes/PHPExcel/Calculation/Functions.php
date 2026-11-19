@@ -313,25 +313,27 @@ class PHPExcel_Calculation_Functions
     {
         return (substr_count($idx, '.') > 1);
     }
-
-
     
-public static function ifCondition($condition)
-{
-    $condition = PHPExcel_Calculation_Functions::flattenSingleValue($condition);
+		public static function ifCondition($condition)
+		{
+			
+			$condition = PHPExcel_Calculation_Functions::flattenSingleValue($condition);
 
-    if (!isset($condition[0])) {
+			if (!isset($condition[0])) {
         $condition = '=""';
-    }
+			}
 
-    if (!in_array($condition[0], array('>', '<', '='))) {
-        if (!is_numeric($condition)) {
+			if (!in_array($condition[0], array('>', '<', '='))) {
+        
+				if (!is_numeric($condition)) {
             $condition = PHPExcel_Calculation::wrapResult(strtoupper($condition));
         }
 
         return '=' . $condition;
-    } else {
-        preg_match('/([<>=]+)(.*)/', $condition, $matches);
+    
+			} else {
+        
+				preg_match('/([<>=]+)(.*)/', $condition, $matches);
 
         if (count($matches) < 3) {
             return '=' . $condition;
@@ -345,214 +347,237 @@ public static function ifCondition($condition)
         }
 
         return $operator . $operand;
-    }
-}
+    
+			}
 
-/**
- * ERROR_TYPE
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function ERROR_TYPE($value = '')
-{
-    $value = self::flattenSingleValue($value);
+		}
 
-    $i = 1;
-
-    foreach (self::$errorCodes as $errorCode) {
+		/**
+			* ERROR_TYPE
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function ERROR_TYPE($value = '')
+		{
+			
+			$value = self::flattenSingleValue($value);
+			$i = 1;
+			
+			foreach (self::$errorCodes as $errorCode) {
+				
         if ($value === $errorCode) {
             return $i;
         }
 
         ++$i;
-    }
+    
+			}
 
-    return self::NA();
-}
+			return self::NA();
+			
+		}
 
-/**
- * IS_BLANK
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_BLANK($value = null)
-{
-    if (!is_null($value)) {
+		/**
+			* IS_BLANK
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_BLANK($value = null)
+		{
+			
+			if (!is_null($value)) {
         $value = self::flattenSingleValue($value);
-    }
+			}
 
-    return is_null($value);
-}
-
-/**
- * IS_ERR
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_ERR($value = '')
-{
-    $value = self::flattenSingleValue($value);
-
-    return self::IS_ERROR($value) && (!self::IS_NA($value));
-}
-
-/**
- * IS_ERROR
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_ERROR($value = '')
-{
-    $value = self::flattenSingleValue($value);
-
-    if (!is_string($value)) {
+			return is_null($value);
+			
+		}
+		
+		/**
+			* IS_ERR
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_ERR($value = '')
+		{
+			
+			$value = self::flattenSingleValue($value);
+			return self::IS_ERROR($value) && (!self::IS_NA($value));
+			
+		}
+		
+		/**
+			* IS_ERROR
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_ERROR($value = '')
+		{
+			
+			$value = self::flattenSingleValue($value);
+			
+			if (!is_string($value)) {
         return false;
-    }
+			}
 
-    return in_array($value, array_values(self::$errorCodes));
-}
+			return in_array($value, array_values(self::$errorCodes));
+			
+		}
+		
+		/**
+			* IS_NA
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_NA($value = '')
+		{
+			
+			$value = self::flattenSingleValue($value);
+			return ($value === self::NA());
+			
+		}
 
-/**
- * IS_NA
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_NA($value = '')
-{
-    $value = self::flattenSingleValue($value);
+		/**
+			* IS_EVEN
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_EVEN($value = null)
+		{
+    
+			$value = self::flattenSingleValue($value);
 
-    return ($value === self::NA());
-}
-
-/**
- * IS_EVEN
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_EVEN($value = null)
-{
-    $value = self::flattenSingleValue($value);
-
-    if ($value === null) {
+			if ($value === null) {
         return self::NAME();
-    } elseif (
-        is_bool($value) ||
+			} elseif (
+        
+				is_bool($value) ||
         (is_string($value) && !is_numeric($value))
-    ) {
+			) {
         return self::VALUE();
-    }
+			}
 
-    return ($value % 2 == 0);
-}
+			return ($value % 2 == 0);
+			
+		}
 
-/**
- * IS_ODD
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_ODD($value = null)
-{
-    $value = self::flattenSingleValue($value);
+		/**
+			* IS_ODD
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_ODD($value = null)
+		{
+    
+			$value = self::flattenSingleValue($value);
 
-    if ($value === null) {
+			if ($value === null) {
         return self::NAME();
-    } elseif (
-        is_bool($value) ||
+			} elseif (
+			
+				is_bool($value) ||
         (is_string($value) && !is_numeric($value))
-    ) {
+			) {
         return self::VALUE();
-    }
+			}
 
-    return (abs($value) % 2 == 1);
-}
+			return (abs($value) % 2 == 1);
+			
+		}
 
-/**
- * IS_NUMBER
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_NUMBER($value = null)
-{
-    $value = self::flattenSingleValue($value);
+		/**
+			* IS_NUMBER
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_NUMBER($value = null)
+		{
+			
+			$value = self::flattenSingleValue($value);
 
-    if (is_string($value)) {
+			if (is_string($value)) {
         return false;
-    }
+			}
 
-    return is_numeric($value);
-}
+			return is_numeric($value);
+			
+		}
+		
+		/**
+			* IS_LOGICAL
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_LOGICAL($value = null)
+		{
 
-/**
- * IS_LOGICAL
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_LOGICAL($value = null)
-{
-    $value = self::flattenSingleValue($value);
+			$value = self::flattenSingleValue($value);
+			return is_bool($value);
+			
+		}
+		
+		/**
+			* IS_TEXT
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_TEXT($value = null)
+		{
+			
+			$value = self::flattenSingleValue($value);
+			return (is_string($value) && !self::IS_ERROR($value));
+			
+		}
+		
+		/**
+			* IS_NONTEXT
+			*
+			* @param mixed $value Value to check
+			* @return boolean
+			*/
+		public static function IS_NONTEXT($value = null)
+		{
+			return !self::IS_TEXT($value);
+		}
+		
+		/**
+			* VERSION
+			*
+			* @return string Version information
+			*/
+		public static function VERSION()
+		{
+			return 'PHPExcel ##VERSION##, ##DATE##';
+		}
 
-    return is_bool($value);
-}
-
-/**
- * IS_TEXT
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_TEXT($value = null)
-{
-    $value = self::flattenSingleValue($value);
-
-    return (is_string($value) && !self::IS_ERROR($value));
-}
-
-/**
- * IS_NONTEXT
- *
- * @param mixed $value Value to check
- * @return boolean
- */
-public static function IS_NONTEXT($value = null)
-{
-    return !self::IS_TEXT($value);
-}
-
-/**
- * VERSION
- *
- * @return string Version information
- */
-public static function VERSION()
-{
-    return 'PHPExcel ##VERSION##, ##DATE##';
-}
-
-/**
- * N
- *
- * Returns a value converted to a number.
- *
- * @param mixed $value The value to convert
- * @return mixed
- */
-public static function N($value = null)
-{
-    while (is_array($value)) {
+		/**
+			* N
+			*
+			* Returns a value converted to a number.
+			*
+			* @param mixed $value The value to convert
+			* @return mixed
+			*/
+		public static function N($value = null)
+		{
+			
+			while (is_array($value)) {
         $value = array_shift($value);
-    }
+			}
 
-    switch (gettype($value)) {
-        case 'double':
+			switch (gettype($value)) {
+        
+				case 'double':
         case 'float':
         case 'integer':
             return $value;
@@ -566,25 +591,28 @@ public static function N($value = null)
                 return $value;
             }
             break;
-    }
+			}
 
-    return 0;
-}
+			return 0;
+			
+		}
+		
+		/**
+			* TYPE
+			*
+			* Returns a number that identifies the type of a value.
+			*
+			* @param mixed $value The value to test
+			* @return number
+			*/
+		public static function TYPE($value = null)
+		{
+    
+			$value = self::flattenArrayIndexed($value);
 
-/**
- * TYPE
- *
- * Returns a number that identifies the type of a value.
- *
- * @param mixed $value The value to test
- * @return number
- */
-public static function TYPE($value = null)
-{
-    $value = self::flattenArrayIndexed($value);
-
-    if (is_array($value) && (count($value) > 1)) {
-        end($value);
+			if (is_array($value) && (count($value) > 1)) {
+				
+				end($value);
         $a = key($value);
 
         // Range of cells is an error.
@@ -594,50 +622,52 @@ public static function TYPE($value = null)
         } elseif (self::isMatrixValue($a)) {
             return 64;
         }
-    } elseif (empty($value)) {
+				
+			} elseif (empty($value)) {
         // Empty cell.
         return 1;
-    }
+			}
 
-    $value = self::flattenSingleValue($value);
+			$value = self::flattenSingleValue($value);
 
-    if (
+			if (
         ($value === null) ||
         is_float($value) ||
         is_int($value)
-    ) {
+			) {
         return 1;
-    } elseif (is_bool($value)) {
+			} elseif (is_bool($value)) {
         return 4;
-    } elseif (is_array($value)) {
+			} elseif (is_array($value)) {
         return 64;
-    } elseif (is_string($value)) {
+			} elseif (is_string($value)) {
         // Errors
         if ((strlen($value) > 0) && ($value[0] == '#')) {
             return 16;
         }
 
         return 2;
-    }
+			}
 
-    return 0;
-}
+			return 0;
+		}
 
-/**
- * Convert a multi-dimensional array to a simple one-dimensional array.
- *
- * @param array $array Array to be flattened
- * @return array
- */
-public static function flattenArray($array)
-{
-    if (!is_array($array)) {
+		/**
+			* Convert a multi-dimensional array to a simple one-dimensional array.
+			*
+			* @param array $array Array to be flattened
+			* @return array
+			*/
+		public static function flattenArray($array)
+		{
+			
+			if (!is_array($array)) {
         return (array) $array;
-    }
+			}
 
-    $arrayValues = array();
+			$arrayValues = array();
 
-    foreach ($array as $value) {
+			foreach ($array as $value) {
         if (is_array($value)) {
             foreach ($value as $val) {
                 if (is_array($val)) {
@@ -651,27 +681,29 @@ public static function flattenArray($array)
         } else {
             $arrayValues[] = $value;
         }
-    }
+			}
 
-    return $arrayValues;
-}
+			return $arrayValues;
+		
+		}
 
-/**
- * Convert a multi-dimensional array to a one-dimensional array,
- * retaining element indexing.
- *
- * @param array $array Array to be flattened
- * @return array
- */
-public static function flattenArrayIndexed($array)
-{
-    if (!is_array($array)) {
+		/**
+			* Convert a multi-dimensional array to a one-dimensional array,
+			* retaining element indexing.
+			*
+			* @param array $array Array to be flattened
+			* @return array
+			*/
+		public static function flattenArrayIndexed($array)
+		{
+    
+			if (!is_array($array)) {
         return (array) $array;
-    }
+			}
 
-    $arrayValues = array();
+			$arrayValues = array();
 
-    foreach ($array as $k1 => $value) {
+			foreach ($array as $k1 => $value) {
         if (is_array($value)) {
             foreach ($value as $k2 => $val) {
                 if (is_array($val)) {
@@ -685,25 +717,29 @@ public static function flattenArrayIndexed($array)
         } else {
             $arrayValues[$k1] = $value;
         }
-    }
+			}
 
-    return $arrayValues;
-}
+			return $arrayValues;
+		
+		}
 
-/**
- * Convert an array to a single scalar value by extracting the first element.
- *
- * @param mixed $value Array or scalar value
- * @return mixed
- */
-public static function flattenSingleValue($value = '')
-{
-    while (is_array($value)) {
+		/**
+			* Convert an array to a single scalar value by extracting the first element.
+			*
+			* @param mixed $value Array or scalar value
+			* @return mixed
+			*/
+		public static function flattenSingleValue($value = '')
+		{
+			
+			while (is_array($value)) {
         $value = array_pop($value);
-    }
+			}
 
-    return $value;
-}
+			return $value;
+			
+		}
+		
 }
 
 

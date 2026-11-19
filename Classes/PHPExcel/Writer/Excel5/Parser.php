@@ -1006,107 +1006,123 @@ class PHPExcel_Writer_Excel5_Parser
      * @param string $cell The Excel cell reference in A1 format.
      * @return array
      */
+		private function cellToRowcol($cell)
+		{
     
-private function cellToRowcol($cell)
-{
-    preg_match('/(\$)?([A-I]?[A-Z])(\$)?(\d+)/', $cell, $match);
+			preg_match('/(\$)?([A-I]?[A-Z])(\$)?(\d+)/', $cell, $match);
 
-    // return absolute column if there is a $ in the ref
-    $col_rel = empty($match[1]) ? 1 : 0;
-    $col_ref = $match[2];
-    $row_rel = empty($match[3]) ? 1 : 0;
-    $row = $match[4];
+			// return absolute column if there is a $ in the ref
+			$col_rel = empty($match[1]) ? 1 : 0;
+			$col_ref = $match[2];
+			$row_rel = empty($match[3]) ? 1 : 0;
+			$row = $match[4];
 
-    // Convert base26 column string to a number.
-    $expn = strlen($col_ref) - 1;
-    $col = 0;
-    $col_ref_length = strlen($col_ref);
+			// Convert base26 column string to a number.
+			$expn = strlen($col_ref) - 1;
+			$col = 0;
+			$col_ref_length = strlen($col_ref);
 
-    for ($i = 0; $i < $col_ref_length; ++$i) {
-        $col += (ord($col_ref[$i]) - 64) * pow(26, $expn);
+			for ($i = 0; $i < $col_ref_length; ++$i) {
+        
+				$col += (ord($col_ref[$i]) - 64) * pow(26, $expn);
         --$expn;
-    }
+				
+			}
 
-    // Convert 1-index to zero-index
-    --$row;
-    --$col;
+			// Convert 1-index to zero-index
+			--$row;
+			--$col;
 
-    return array($row, $col, $row_rel, $col_rel);
-}
+			return array($row, $col, $row_rel, $col_rel);
 
-/**
- * Advance to the next valid token.
- *
- * @access private
- */
-private function advance()
-{
-    $i = $this->currentCharacter;
-    $formula_length = strlen($this->formula);
+		}
 
-    // eat up white spaces
-    if ($i < $formula_length) {
-        while (
-            $i < $formula_length &&
-            $this->formula[$i] == " "
-        ) {
-            ++$i;
+		/**
+		 * Advance to the next valid token.
+		 *
+		 * @access private
+		 */
+		private function advance()
+		{
+    
+			$i = $this->currentCharacter;
+			$formula_length = strlen($this->formula);
+
+			// eat up white spaces
+			if ($i < $formula_length) {
+        
+				while (
+            
+					$i < $formula_length &&
+          $this->formula[$i] == " "
+        
+				) {
+          ++$i;
         }
 
         if ($i < ($formula_length - 1)) {
-            $this->lookAhead = $this->formula[$i + 1];
+					$this->lookAhead = $this->formula[$i + 1];
         } else {
-            $this->lookAhead = '';
+          $this->lookAhead = '';
         }
 
         $token = '';
-    } else {
-        $this->currentToken = '';
+				
+			} else {
+        
+				$this->currentToken = '';
         $this->lookAhead = '';
         return;
-    }
+    
+			}
 
-    while ($i < $formula_length) {
-        $token .= $this->formula[$i];
+			while ($i < $formula_length) {
+        
+				$token .= $this->formula[$i];
 
         if ($i < ($formula_length - 1)) {
-            $this->lookAhead = $this->formula[$i + 1];
+					$this->lookAhead = $this->formula[$i + 1];
         } else {
-            $this->lookAhead = '';
+          $this->lookAhead = '';
         }
 
         if ($this->match($token) != '') {
-            $this->currentCharacter = $i + 1;
-            $this->currentToken = $token;
-            return 1;
-        }
+            
+					$this->currentCharacter = $i + 1;
+          $this->currentToken = $token;
+          return 1;
+        
+				}
 
         if ($i < ($formula_length - 2)) {
-            $this->lookAhead = $this->formula[$i + 2];
+          $this->lookAhead = $this->formula[$i + 2];
         } else {
-            $this->lookAhead = '';
+          $this->lookAhead = '';
         }
 
         ++$i;
-    }
+				
+			}
 
-    $this->currentCharacter = $formula_length;
-    $this->currentToken = '';
-    $this->lookAhead = '';
+			$this->currentCharacter = $formula_length;
+			$this->currentToken = '';
+			$this->lookAhead = '';
 
-    return false;
-}
+			return false;
 
-/**
- * Checks if it's a valid token.
- *
- * @access private
- * @param mixed $token The token to check.
- * @return mixed The checked token or false on failure
- */
-private function match($token)
-{
-    switch ($token) {
+		}
+
+		/**
+		 * Checks if it's a valid token.
+		 *
+		 * @access private
+		 * @param mixed $token The token to check.
+		 * @return mixed The checked token or false on failure
+		*/
+		private function match($token)
+		{
+    
+			switch ($token) {
         case "+":
         case "-":
         case "*":
@@ -1139,16 +1155,18 @@ private function match($token)
         default:
             // If it's a reference A1 or $A$1 or $A1 or A$1
             if (
-                preg_match('/^\$?[A-Ia-i]?[A-Za-z]\$?[0-9]+$/', $token) &&
+                
+								preg_match('/^\$?[A-Ia-i]?[A-Za-z]\$?[0-9]+$/', $token) &&
                 !preg_match("/[0-9]/", $this->lookAhead) &&
                 ($this->lookAhead != ':') &&
                 ($this->lookAhead != '.') &&
                 ($this->lookAhead != '!')
+								
             ) {
                 return $token;
-
             } elseif (
-                preg_match(
+                
+								preg_match(
                     "/^" . self::REGEX_SHEET_TITLE_UNQUOTED .
                     "(\:" . self::REGEX_SHEET_TITLE_UNQUOTED .
                     ")?\!\\$?[A-Ia-i]?[A-Za-z]\\$?[0-9]+$/u",
@@ -1157,12 +1175,16 @@ private function match($token)
                 !preg_match("/[0-9]/", $this->lookAhead) &&
                 ($this->lookAhead != ':') &&
                 ($this->lookAhead != '.')
+								
             ) {
-                // External reference
+                
+								// External reference
                 return $token;
+								
 
             } elseif (
-                preg_match(
+                
+								preg_match(
                     "/^'" . self::REGEX_SHEET_TITLE_QUOTED .
                     "(\:" . self::REGEX_SHEET_TITLE_QUOTED .
                     ")?'\!\\$?[A-Ia-i]?[A-Za-z]\\$?[0-9]+$/u",
@@ -1171,168 +1193,211 @@ private function match($token)
                 !preg_match("/[0-9]/", $this->lookAhead) &&
                 ($this->lookAhead != ':') &&
                 ($this->lookAhead != '.')
+								
             ) {
-                // External reference with quoted sheet title
+                
+								// External reference with quoted sheet title
                 return $token;
+								
 
             } elseif (
-                preg_match(
+                
+								preg_match(
                     '/^(\$)?[A-Ia-i]?[A-Za-z](\$)?[0-9]+:(\$)?[A-Ia-i]?[A-Za-z](\$)?[0-9]+$/',
                     $token
                 ) &&
                 !preg_match("/[0-9]/", $this->lookAhead)
+								
             ) {
-                // Cell range
+                
+								// Cell range
                 return $token;
 
             } elseif (
-                preg_match(
+                
+								preg_match(
                     "/^" . self::REGEX_SHEET_TITLE_UNQUOTED .
                     "(\:" . self::REGEX_SHEET_TITLE_UNQUOTED .
                     ")?\!\\$?([A-Ia-i]?[A-Za-z])?\\$?[0-9]+:\\$?([A-Ia-i]?[A-Za-z])?\\$?[0-9]+$/u",
                     $token
                 ) &&
                 !preg_match("/[0-9]/", $this->lookAhead)
+								
             ) {
-                // External range
+                
+								// External range
                 return $token;
+								
 
             } elseif (
-                preg_match(
+                
+								preg_match(
                     "/^'" . self::REGEX_SHEET_TITLE_QUOTED .
                     "(\:" . self::REGEX_SHEET_TITLE_QUOTED .
                     ")?'\!\\$?([A-Ia-i]?[A-Za-z])?\\$?[0-9]+:\\$?([A-Ia-i]?[A-Za-z])?\\$?[0-9]+$/u",
                     $token
                 ) &&
                 !preg_match("/[0-9]/", $this->lookAhead)
+								
             ) {
-                // External range with quoted sheet title
+                
+								// External range with quoted sheet title
                 return $token;
 
             } elseif (
-                is_numeric($token) &&
+                
+								is_numeric($token) &&
                 (
                     !is_numeric($token . $this->lookAhead) ||
                     ($this->lookAhead == '')
                 ) &&
                 ($this->lookAhead != '!') &&
                 ($this->lookAhead != ':')
+								
             ) {
-                // Number
+                
+								// Number
                 return $token;
 
             } elseif (
-                preg_match('/"([^"]|""){0,255}"/', $token) &&
+                
+								preg_match('/"([^"]|""){0,255}"/', $token) &&
                 $this->lookAhead != '"' &&
                 (substr_count($token, '"') % 2 == 0)
+								
             ) {
-                // String
+                
+								// String
                 return $token;
 
             } elseif (
-                preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $token) ||
+                
+								preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $token) ||
                 $token == '#N/A'
+								
             ) {
-                // Error code
+                
+								// Error code
                 return $token;
 
             } elseif (
-                preg_match("/^[A-Z0-9\xc0-\xdc\\.]+$/i", $token) &&
+                
+								preg_match("/^[A-Z0-9\xc0-\xdc\\.]+$/i", $token) &&
                 ($this->lookAhead == "(")
+								
             ) {
-                // Function call
+                
+								// Function call
                 return $token;
 
             } elseif (substr($token, -1) == ')') {
-                // Possible named range or argument
+                
+								// Possible named range or argument
                 return $token;
             }
 
             return '';
-    }
-}
+    
+			}
+		
+		}
+		
+		/**
+		 * The parsing method. It parses a formula.
+		 *
+		 * @access public
+		 * @param string $formula The formula to parse, without the initial equal sign.
+		 * @return mixed true on success
+		*/
+		public function parse($formula)
+		{
+    
+			$this->currentCharacter = 0;
+      $this->formula = $formula;
+      $this->lookAhead = isset($formula[1]) ? $formula[1] : '';
 
-/**
- * The parsing method. It parses a formula.
- *
- * @access public
- * @param string $formula The formula to parse, without the initial equal sign.
- * @return mixed true on success
- */
-public function parse($formula)
-{
-    $this->currentCharacter = 0;
-    $this->formula = $formula;
-    $this->lookAhead = isset($formula[1]) ? $formula[1] : '';
+      $this->advance();
+      $this->parseTree = $this->condition();
 
-    $this->advance();
-    $this->parseTree = $this->condition();
+      return true;
 
-    return true;
-}
+		}
 
-/**
- * It parses a condition.
- *
- * Cond -> Expr [(">" | "<") Expr]
- *
- * @access private
- * @return mixed The parsed tree on success
- */
-private function condition()
-{
-    $result = $this->expression();
+		/**
+		 * It parses a condition.
+		 *
+		 * Cond -> Expr [(">" | "<") Expr]
+		 *
+		 * @access private
+		 * @return mixed The parsed tree on success
+		 */
+		private function condition()
+		{
+			
+			$result = $this->expression();
 
-    if ($this->currentToken == "<") {
-        $this->advance();
+			if ($this->currentToken == "<") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgLT', $result, $result2);
+				
 
-    } elseif ($this->currentToken == ">") {
-        $this->advance();
+			} elseif ($this->currentToken == ">") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgGT', $result, $result2);
 
-    } elseif ($this->currentToken == "<=") {
-        $this->advance();
+			} elseif ($this->currentToken == "<=") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgLE', $result, $result2);
 
-    } elseif ($this->currentToken == ">=") {
-        $this->advance();
+			} elseif ($this->currentToken == ">=") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgGE', $result, $result2);
 
-    } elseif ($this->currentToken == "=") {
-        $this->advance();
+    
+			} elseif ($this->currentToken == "=") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgEQ', $result, $result2);
 
-    } elseif ($this->currentToken == "<>") {
-        $this->advance();
+			} elseif ($this->currentToken == "<>") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgNE', $result, $result2);
 
-    } elseif ($this->currentToken == "&") {
-        $this->advance();
+			} elseif ($this->currentToken == "&") {
+        
+				$this->advance();
         $result2 = $this->expression();
         $result = $this->createTree('ptgConcat', $result, $result2);
-    }
+			}
 
-    return $result;
-}
-
-/**
- * It parses an expression.
- *
- * @access private
- * @return mixed The parsed tree
- */
-private function expression()
-{
-    // If it's a string return a string node
-    if (preg_match('/"([^"]|""){0,255}"/', $this->currentToken)) {
-        $tmp = str_replace('""', '"', $this->currentToken);
+			return $result;
+			
+		}
+		
+		/**
+		 * It parses an expression.
+		 *
+		 * @access private
+		 * @return mixed The parsed tree
+		 */
+		private function expression()
+		{
+			
+			// If it's a string return a string node
+			if (preg_match('/"([^"]|""){0,255}"/', $this->currentToken)) {
+        
+				$tmp = str_replace('""', '"', $this->currentToken);
 
         if (($tmp == '"') || ($tmp == '')) {
             $tmp = '""';
@@ -1343,120 +1408,135 @@ private function expression()
 
         return $result;
 
-    // If it's an error code
-    } elseif (
-        preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $this->currentToken) ||
+			// If it's an error code
+			} elseif (
+        
+				preg_match("/^#[A-Z0\/]{3,5}[!?]{1}$/", $this->currentToken) ||
         $this->currentToken == '#N/A'
-    ) {
-        $result = $this->createTree($this->currentToken, 'ptgErr', '');
+				
+			) {
+        
+				$result = $this->createTree($this->currentToken, 'ptgErr', '');
         $this->advance();
-
         return $result;
 
-    // If it's a negative value
-    } elseif ($this->currentToken == "-") {
-        $this->advance();
+			// If it's a negative value
+			} elseif ($this->currentToken == "-") {
+        
+				$this->advance();
         $result2 = $this->expression();
-
         return $this->createTree('ptgUminus', $result2, '');
 
-    // If it's a positive value
-    } elseif ($this->currentToken == "+") {
-        $this->advance();
+			// If it's a positive value
+			} elseif ($this->currentToken == "+") {
+        
+				$this->advance();
         $result2 = $this->expression();
-
         return $this->createTree('ptgUplus', $result2, '');
-    }
+    
+			}
 
-    $result = $this->term();
+			$result = $this->term();
 
-    while (
+			while (
         ($this->currentToken == "+") ||
         ($this->currentToken == "-") ||
         ($this->currentToken == "^")
-    ) {
+			) {
         if ($this->currentToken == "+") {
-            $this->advance();
+            
+						$this->advance();
             $result2 = $this->term();
             $result = $this->createTree('ptgAdd', $result, $result2);
 
         } elseif ($this->currentToken == "-") {
-            $this->advance();
+            
+						$this->advance();
             $result2 = $this->term();
             $result = $this->createTree('ptgSub', $result, $result2);
 
         } else {
-            $this->advance();
+            
+						$this->advance();
             $result2 = $this->term();
             $result = $this->createTree('ptgPower', $result, $result2);
         }
-    }
+			}
 
-    return $result;
-}
+			return $result;
 
-/**
- * Introduces a ptgParen element in the tree.
- *
- * @access private
- * @return array The parsed tree
- */
-private function parenthesizedExpression()
-{
-    return $this->createTree('ptgParen', $this->expression(), '');
-}
+		}
 
-/**
- * It parses a term.
- *
- * Term -> Fact [("*" | "/") Fact]
- *
- * @access private
- * @return mixed The parsed tree
- */
-private function term()
-{
-    $result = $this->fact();
+		/**
+		 * Introduces a ptgParen element in the tree.
+		 *
+		 * @access private
+		 * @return array The parsed tree
+		 */
+		private function parenthesizedExpression()
+    {
+			return $this->createTree('ptgParen', $this->expression(), '');
+		}
+		 
+		/**
+		 * It parses a term.
+		 *
+		 * Term -> Fact [("*" | "/") Fact]
+		 *
+		 * @access private
+		 * @return mixed The parsed tree
+		 */
+		private function term()
+		{
+    
+			$result = $this->fact();
 
-    while (
+			while (
         ($this->currentToken == "*") ||
         ($this->currentToken == "/")
-    ) {
-        if ($this->currentToken == "*") {
-            $this->advance();
-            $result2 = $this->fact();
-            $result = $this->createTree('ptgMul', $result, $result2);
+			) {
+        
+				if ($this->currentToken == "*") {
+            
+					$this->advance();
+          $result2 = $this->fact();
+          $result = $this->createTree('ptgMul', $result, $result2);
 
         } else {
-            $this->advance();
-            $result2 = $this->fact();
-            $result = $this->createTree('ptgDiv', $result, $result2);
-        }
-    }
+            
+					$this->advance();
+          $result2 = $this->fact();
+          $result = $this->createTree('ptgDiv', $result, $result2);
+        
+				}
+			}
 
-    return $result;
-}
+			return $result;
+			
+		}
 
-/**
- * It parses a factor.
- *
- * @access private
- * @return mixed The parsed tree
- */
-private function fact()
-{
-    if ($this->currentToken == "(") {
-        $this->advance();
+		/**
+		 * It parses a factor.
+		 *
+		 * @access private
+		 * @return mixed The parsed tree
+		*/
+		private function fact()
+		{
+    
+			if ($this->currentToken == "(") {
+        
+				$this->advance();
         $result = $this->parenthesizedExpression();
 
         if ($this->currentToken != ")") {
-            throw new PHPExcel_Writer_Exception("')' token expected.");
+          throw new PHPExcel_Writer_Exception("')' token expected.");
         }
 
         $this->advance();
-
         return $result;
-    }
+    
+		}
 
     // Cell reference
     if (preg_match('/^\$?[A-Ia-i]?[A-Za-z]\$?[0-9]+$/', $this->currentToken)) {
@@ -1554,17 +1634,19 @@ private function fact()
         ", lookahead: " . $this->lookAhead .
         ", current char: " . $this->currentCharacter
     );
-}
 
-/**
- * It parses a function call.
- *
- * @access private
- * @return mixed The parsed tree
- */
-private function func()
-{
-    $num_args = 0;
+	}
+
+	/**
+	 * It parses a function call.
+	 *
+	 * @access private
+	 * @return mixed The parsed tree
+  */
+  private function func()
+  {
+    
+		$num_args = 0;
     $function = strtoupper($this->currentToken);
     $result = '';
 
@@ -1612,36 +1694,40 @@ private function func()
     $this->advance(); // eat the ")"
 
     return $result;
-}
 
-/**
- * Creates a tree.
- *
- * @access private
- * @param mixed $value The value of this node.
- * @param mixed $left The left subtree or final node.
- * @param mixed $right The right subtree or final node.
- * @return array
- */
-private function createTree($value, $left, $right)
-{
-    return array(
+	}
+
+	/**
+   * Creates a tree.
+	 *
+	 * @access private
+	 * @param mixed $value The value of this node.
+   * @param mixed $left The left subtree or final node.
+   * @param mixed $right The right subtree or final node.
+   * @return array
+   */
+  private function createTree($value, $left, $right)
+	{
+    
+		return array(
         'value' => $value,
         'left' => $left,
         'right' => $right
     );
-}
 
-/**
- * Builds a string containing the tree in reverse polish notation.
- *
- * @access public
- * @param array $tree The optional tree to convert.
- * @return string
- */
-public function toReversePolish($tree = array())
-{
-    $polish = "";
+  }
+
+  /**
+   * Builds a string containing the tree in reverse polish notation.
+   *
+   * @access public
+   * @param array $tree The optional tree to convert.
+   * @return string
+   */
+  public function toReversePolish($tree = array())
+  {
+    
+		$polish = "";
 
     if (empty($tree)) {
         $tree = $this->parseTree;
@@ -1689,8 +1775,8 @@ public function toReversePolish($tree = array())
     }
 
     $polish .= $converted_tree;
-
     return $polish;
-}
+
+  }
 
 }

@@ -788,16 +788,16 @@ class PHPExcel_Cell
      *    @return    int Column index (base 1 !!!)
      */
     
-public static function columnIndexFromString($pString = 'A')
-{
-    // Using a lookup cache improves performance.
-    static $_indexCache = array();
+		public static function columnIndexFromString($pString = 'A')
+		{
+    
+			// Using a lookup cache improves performance.
+			static $_indexCache = array();
 
-    if (isset($_indexCache[$pString])) {
+			if(isset($_indexCache[$pString])) 
         return $_indexCache[$pString];
-    }
 
-    static $_columnLookup = array(
+			static $_columnLookup = array(
         'A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'F' => 6,
         'G' => 7, 'H' => 8, 'I' => 9, 'J' => 10, 'K' => 11, 'L' => 12,
         'M' => 13, 'N' => 14, 'O' => 15, 'P' => 16, 'Q' => 17,
@@ -809,59 +809,66 @@ public static function columnIndexFromString($pString = 'A')
         'm' => 13, 'n' => 14, 'o' => 15, 'p' => 16, 'q' => 17,
         'r' => 18, 's' => 19, 't' => 20, 'u' => 21, 'v' => 22,
         'w' => 23, 'x' => 24, 'y' => 25, 'z' => 26
-    );
+			);
 
-    if (!is_string($pString) || $pString === '') {
+			if(!is_string($pString) || $pString === '') {
         throw new PHPExcel_Exception(
             "Column string index can not be empty"
         );
-    }
+			}
 
-    $length = strlen($pString);
+			$length = strlen($pString);
 
-    if ($length > 3) {
+			if($length > 3) {
         throw new PHPExcel_Exception(
             "Column string index can not be longer than 3 characters"
         );
-    }
+			}
 
-    // Validate that the column contains letters only.
-    for ($i = 0; $i < $length; ++$i) {
-        if (!isset($_columnLookup[$pString[$i]])) {
+			// Validate that the column contains letters only.
+			for($i = 0; $i < $length; ++$i) 
+			{
+        
+				if(!isset($_columnLookup[$pString[$i]])) {
             throw new PHPExcel_Exception(
                 "Column string index must contain letters only"
             );
         }
-    }
+    
+			}
 
-    if ($length === 1) {
+			if($length === 1) {
         $_indexCache[$pString] = $_columnLookup[$pString];
-    } elseif ($length === 2) {
+      } elseif ($length === 2) {
         $_indexCache[$pString] =
             $_columnLookup[$pString[0]] * 26 +
             $_columnLookup[$pString[1]];
-    } else {
+      } else {
         $_indexCache[$pString] =
             $_columnLookup[$pString[0]] * 676 +
             $_columnLookup[$pString[1]] * 26 +
             $_columnLookup[$pString[2]];
-    }
+      }
 
-    return $_indexCache[$pString];
-}
+      return $_indexCache[$pString];
+		
+		}
 
-/**
- * String from column index.
- *
- * @param int $pColumnIndex Column index (base 0)
- * @return string
- */
-public static function stringFromColumnIndex($pColumnIndex = 0)
-{
-    static $_indexCache = array();
+		/**
+		 * String from column index.
+	   *
+		 * @param int $pColumnIndex Column index (base 0)
+		 * @return string
+		 */
+		public static function stringFromColumnIndex($pColumnIndex = 0)
+		{
+    
+			static $_indexCache = array();
 
-    if (!isset($_indexCache[$pColumnIndex])) {
-        if ($pColumnIndex < 26) {
+			if(!isset($_indexCache[$pColumnIndex])) 
+			{
+        
+				if ($pColumnIndex < 26) {
             $_indexCache[$pColumnIndex] = chr(65 + $pColumnIndex);
         } elseif ($pColumnIndex < 702) {
             $_indexCache[$pColumnIndex] =
@@ -873,27 +880,32 @@ public static function stringFromColumnIndex($pColumnIndex = 0)
                 chr(65 + ((($pColumnIndex - 26) % 676) / 26)) .
                 chr(65 + $pColumnIndex % 26);
         }
-    }
+    
+			}
 
-    return $_indexCache[$pColumnIndex];
-}
+			return $_indexCache[$pColumnIndex];
 
-/**
- * Extract all cell references in range.
- *
- * @param string $pRange Range (e.g. A1, A1:C10 or A1:E10 A20:E25)
- * @return array
- */
-public static function extractAllCellReferencesInRange($pRange = 'A1')
-{
-    $returnValue = array();
+		}
 
-    // Explode spaces.
-    $cellBlocks = explode(' ', str_replace('$', '', strtoupper($pRange)));
+		/**
+		 * Extract all cell references in range.
+		 *
+		 * @param string $pRange Range (e.g. A1, A1:C10 or A1:E10 A20:E25)
+		 * @return array
+		 */
+		public static function extractAllCellReferencesInRange($pRange = 'A1')
+		{
+    
+			$returnValue = array();
 
-    foreach ($cellBlocks as $cellBlock) {
-        // Single cell?
-        if (strpos($cellBlock, ':') === false &&
+			// Explode spaces.
+			$cellBlocks = explode(' ', str_replace('$', '', strtoupper($pRange)));
+
+			foreach($cellBlocks as $cellBlock) 
+			{
+        
+				// Single cell?
+        if(strpos($cellBlock, ':') === false &&
             strpos($cellBlock, ',') === false) {
             $returnValue[] = $cellBlock;
             continue;
@@ -902,169 +914,195 @@ public static function extractAllCellReferencesInRange($pRange = 'A1')
         // Range.
         $ranges = self::splitRange($cellBlock);
 
-        foreach ($ranges as $range) {
-            // Single cell?
-            if (!isset($range[1])) {
+        foreach($ranges as $range) 
+				{
+          
+					// Single cell?
+          if(!isset($range[1])) {
                 $returnValue[] = $range[0];
                 continue;
-            }
+          }
 
-            // Range.
-            list($rangeStart, $rangeEnd) = $range;
+          // Range.
+          list($rangeStart, $rangeEnd) = $range;
 
-            sscanf($rangeStart, '%[A-Z]%d', $startCol, $startRow);
-            sscanf($rangeEnd, '%[A-Z]%d', $endCol, $endRow);
+          sscanf($rangeStart, '%[A-Z]%d', $startCol, $startRow);
+          sscanf($rangeEnd, '%[A-Z]%d', $endCol, $endRow);
 
-            ++$endCol;
+          ++$endCol;
 
-            $currentCol = $startCol;
+          $currentCol = $startCol;
+          $currentRow = $startRow;
+
+          // Loop through cells.
+          while($currentCol != $endCol) 
+					{
+						
+						while($currentRow <= $endRow) 
+						{
+							
+							$returnValue[] = $currentCol . $currentRow;
+              ++$currentRow;
+                
+						}
+
+            ++$currentCol;
             $currentRow = $startRow;
-
-            // Loop through cells.
-            while ($currentCol != $endCol) {
-                while ($currentRow <= $endRow) {
-                    $returnValue[] = $currentCol . $currentRow;
-                    ++$currentRow;
-                }
-
-                ++$currentCol;
-                $currentRow = $startRow;
-            }
+            
+					}
+					
         }
-    }
+				
+			}
 
-    // Sort the result by column and row.
-    $sortKeys = array();
+			// Sort the result by column and row.
+			$sortKeys = array();
 
-    foreach (array_unique($returnValue) as $coord) {
-        sscanf($coord, '%[A-Z]%d', $column, $row);
+			foreach(array_unique($returnValue) as $coord) 
+			{
+        
+				sscanf($coord, '%[A-Z]%d', $column, $row);
         $sortKeys[sprintf('%3s%09d', $column, $row)] = $coord;
-    }
+    
+			}
 
-    ksort($sortKeys);
+			ksort($sortKeys);
+			return array_values($sortKeys);
 
-    return array_values($sortKeys);
-}
+		}
 
-/**
- * Compare two cells.
- *
- * @param PHPExcel_Cell $a
- * @param PHPExcel_Cell $b
- * @return int
- */
-public static function compareCells(PHPExcel_Cell $a, PHPExcel_Cell $b)
-{
-    if ($a->getRow() < $b->getRow()) {
+		/**
+		 * Compare two cells.
+		 *
+		 * @param PHPExcel_Cell $a
+		 * @param PHPExcel_Cell $b
+		 * @return int
+		 */
+		public static function compareCells(PHPExcel_Cell $a, PHPExcel_Cell $b)
+		{
+    
+			if($a->getRow() < $b->getRow()) {
         return -1;
-    } elseif ($a->getRow() > $b->getRow()) {
+			}elseif ($a->getRow() > $b->getRow()) {
         return 1;
-    } elseif (
-        self::columnIndexFromString($a->getColumn()) <
+			}elseif (
+        
+				self::columnIndexFromString($a->getColumn()) <
         self::columnIndexFromString($b->getColumn())
-    ) {
+    
+			) {
         return -1;
-    } else {
+			} else {
         return 1;
-    }
-}
+			}
 
-/**
- * Get value binder to use.
- *
- * @return PHPExcel_Cell_IValueBinder
- */
-public static function getValueBinder()
-{
-    if (self::$valueBinder === null) {
+		}
+
+		/**
+		 * Get value binder to use.
+		 *
+		 * @return PHPExcel_Cell_IValueBinder
+		 */
+		public static function getValueBinder()
+		{
+    
+			if(self::$valueBinder === null) 
         self::$valueBinder = new PHPExcel_Cell_DefaultValueBinder();
-    }
 
-    return self::$valueBinder;
-}
+			return self::$valueBinder;
 
-/**
- * Set value binder to use.
- *
- * @param PHPExcel_Cell_IValueBinder $binder
- * @throws PHPExcel_Exception
- */
-public static function setValueBinder(PHPExcel_Cell_IValueBinder $binder = null)
-{
-    if ($binder === null) {
+		}
+
+		/**
+		 * Set value binder to use.
+		 *
+		 * @param PHPExcel_Cell_IValueBinder $binder
+		 * @throws PHPExcel_Exception
+		 */
+		public static function setValueBinder(PHPExcel_Cell_IValueBinder $binder = null)
+		{
+    
+			if($binder === null) {
         throw new PHPExcel_Exception(
             "A PHPExcel_Cell_IValueBinder is required for PHPExcel to function correctly."
         );
+			}
+
+			self::$valueBinder = $binder;
+
+		}
+
+		/**
+		 * Implement PHP __clone to create a deep clone, not just a shallow copy.
+		 */
+		public function __clone()
+		{
+    
+			$vars = get_object_vars($this);
+
+			foreach($vars as $key => $value) 
+			{
+        
+				if(is_object($value) && $key != 'parent')
+          $this->$key = clone $value;
+        else 
+          $this->$key = $value;
+        
+			}
+		
+		}
+
+		/**
+		 * Get index to cellXf.
+		 *
+		 * @return int
+		 */
+		public function getXfIndex()
+		{
+			return $this->xfIndex;
+		}
+
+		/**
+		 * Set index to cellXf.
+		 *
+		 * @param int $pValue
+		 * @return PHPExcel_Cell
+		 */
+		public function setXfIndex($pValue = 0)
+		{
+    
+			$this->xfIndex = $pValue;
+			return $this->notifyCacheController();
+
+	  }
+
+	  /**
+		 * @deprecated Since version 1.7.8 for planned changes to cell for array formula handling.
+		 */
+	  public function setFormulaAttributes($pAttributes)
+	  {
+    
+		  $this->formulaAttributes = $pAttributes;
+      return $this;
+
+	  }
+
+	  /**
+		 * @deprecated Since version 1.7.8 for planned changes to cell for array formula handling.
+		 */
+		public function getFormulaAttributes()
+		{
+			return $this->formulaAttributes;
+		}
+
+		/**
+		 * Convert to string.
+		 *
+	   * @return string
+     */
+    public function __toString()
+    {
+      return (string) $this->getValue();
     }
-
-    self::$valueBinder = $binder;
-}
-
-/**
- * Implement PHP __clone to create a deep clone, not just a shallow copy.
- */
-public function __clone()
-{
-    $vars = get_object_vars($this);
-
-    foreach ($vars as $key => $value) {
-        if (is_object($value) && $key != 'parent') {
-            $this->$key = clone $value;
-        } else {
-            $this->$key = $value;
-        }
-    }
-}
-
-/**
- * Get index to cellXf.
- *
- * @return int
- */
-public function getXfIndex()
-{
-    return $this->xfIndex;
-}
-
-/**
- * Set index to cellXf.
- *
- * @param int $pValue
- * @return PHPExcel_Cell
- */
-public function setXfIndex($pValue = 0)
-{
-    $this->xfIndex = $pValue;
-
-    return $this->notifyCacheController();
-}
-
-/**
- * @deprecated Since version 1.7.8 for planned changes to cell for array formula handling.
- */
-public function setFormulaAttributes($pAttributes)
-{
-    $this->formulaAttributes = $pAttributes;
-
-    return $this;
-}
-
-/**
- * @deprecated Since version 1.7.8 for planned changes to cell for array formula handling.
- */
-public function getFormulaAttributes()
-{
-    return $this->formulaAttributes;
-}
-
-/**
- * Convert to string.
- *
- * @return string
- */
-public function __toString()
-{
-    return (string) $this->getValue();
-}
 
 }

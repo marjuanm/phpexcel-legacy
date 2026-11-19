@@ -518,27 +518,29 @@ class PHPExcel_Shared_String
      * @author  Rasmus Andersson {@link http://rasmusandersson.se/}
      * @author vadik56
      */
-public static function utf16_decode($str, $bom_be = true)
-{
-    if (strlen($str) < 2) {
+		public static function utf16_decode($str, $bom_be = true)
+		{
+    
+			if (strlen($str) < 2) {
         return $str;
-    }
+			}
 
-    $c0 = ord($str[0]);
-    $c1 = ord($str[1]);
+			$c0 = ord($str[0]);
+			$c1 = ord($str[1]);
 
-    if ($c0 == 0xfe && $c1 == 0xff) {
+			if ($c0 == 0xfe && $c1 == 0xff) {
         $str = substr($str, 2);
-    } elseif ($c0 == 0xff && $c1 == 0xfe) {
+			} elseif ($c0 == 0xff && $c1 == 0xfe) {
         $str = substr($str, 2);
         $bom_be = false;
-    }
+			}
 
-    $len = strlen($str);
-    $newstr = '';
+			$len = strlen($str);
+			$newstr = '';
 
-    for ($i = 0; $i < $len; $i += 2) {
-        if ($i + 1 >= $len) {
+			for ($i = 0; $i < $len; $i += 2) {
+        
+				if ($i + 1 >= $len) {
             break;
         }
 
@@ -551,10 +553,12 @@ public static function utf16_decode($str, $bom_be = true)
         }
 
         $newstr .= ($val == 0x000A) ? "\n" : chr($val);
-    }
+    
+			}
 
-    return $newstr;
-}
+			return $newstr;
+
+		}
 
     /**
      * Get character count. First try mbstring, then iconv, finally strlen
@@ -564,22 +568,24 @@ public static function utf16_decode($str, $bom_be = true)
      * @return int Character count
      */
     public static function CountCharacters($value, $enc = 'UTF-8')
-{
-    if ($value === null) {
+		{
+    
+			if ($value === null) {
         $value = '';
-    }
+			}
 
-    if (self::getIsMbstringEnabled()) {
+			if (self::getIsMbstringEnabled()) {
         return mb_strlen($value, $enc);
-    }
+			}
 
-    if (self::getIsIconvEnabled()) {
+			if (self::getIsIconvEnabled()) {
         return iconv_strlen($value, $enc);
-    }
+			}
 
-    // else strlen
-    return strlen($value);
-}
+			// else strlen
+			return strlen($value);
+
+		}
 
     /**
      * Get a substring of a UTF-8 encoded string. First try mbstring, then iconv, finally strlen

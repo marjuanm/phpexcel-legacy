@@ -1475,15 +1475,15 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
      * @return PHPExcel_Worksheet
      */
     public function setConditionalStyles($pCoordinate, $pValue)
-{
-    if ($pCoordinate === null) {
+		{
+    
+		  if($pCoordinate === null)
         $pCoordinate = 'A1';
-    }
 
-    $this->conditionalStylesCollection[strtoupper($pCoordinate)] = $pValue;
+      $this->conditionalStylesCollection[strtoupper($pCoordinate)] = $pValue;
+		  return $this;
 
-    return $this;
-}
+		}
 
     /**
      * Get style for cell by using numeric cell coordinates

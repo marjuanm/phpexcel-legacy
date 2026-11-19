@@ -70,30 +70,25 @@ class PHPExcel_Cell_DefaultValueBinder implements PHPExcel_Cell_IValueBinder
      * @param   mixed  $pValue
      * @return  string
      */
-
-public static function dataTypeForValue($pValue = null)
-{
-    // Match the value against a few data types
-    if ($pValue === null) {
+		public static function dataTypeForValue($pValue = null)
+		{
+			
+			// Match the value against a few data types
+			if ($pValue === null) {
         return PHPExcel_Cell_DataType::TYPE_NULL;
-
-    } elseif ($pValue === '') {
+			} elseif ($pValue === '') {
         return PHPExcel_Cell_DataType::TYPE_STRING;
-
-    } elseif ($pValue instanceof PHPExcel_RichText) {
+			} elseif ($pValue instanceof PHPExcel_RichText) {
         return PHPExcel_Cell_DataType::TYPE_INLINE;
-
-    } elseif (is_string($pValue) && strlen($pValue) > 1 && $pValue[0] === '=') {
+			} elseif (is_string($pValue) && strlen($pValue) > 1 && $pValue[0] === '=') {
         return PHPExcel_Cell_DataType::TYPE_FORMULA;
-
-    } elseif (is_bool($pValue)) {
+			} elseif (is_bool($pValue)) {
         return PHPExcel_Cell_DataType::TYPE_BOOL;
-
-    } elseif (is_float($pValue) || is_int($pValue)) {
+			} elseif (is_float($pValue) || is_int($pValue)) {
         return PHPExcel_Cell_DataType::TYPE_NUMERIC;
-
-    } elseif (is_string($pValue) && preg_match('/^[\+\-]?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)([Ee][\-\+]?[0-2]?\d{1,3})?$/', $pValue)) {
-        $tValue = ltrim($pValue, '+-');
+			} elseif (is_string($pValue) && preg_match('/^[\+\-]?([0-9]+\\.?[0-9]*|[0-9]*\\.?[0-9]+)([Ee][\-\+]?[0-2]?\d{1,3})?$/', $pValue)) {
+        
+				$tValue = ltrim($pValue, '+-');
 
         if (
             strlen($tValue) > 1 &&
@@ -112,14 +107,17 @@ public static function dataTypeForValue($pValue = null)
 
         return PHPExcel_Cell_DataType::TYPE_NUMERIC;
 
-    } elseif (
-        is_string($pValue) &&
+			} elseif (
+        
+				is_string($pValue) &&
         array_key_exists($pValue, PHPExcel_Cell_DataType::getErrorCodes())
-    ) {
+    
+			) {
         return PHPExcel_Cell_DataType::TYPE_ERROR;
-    }
+			}
 
-    return PHPExcel_Cell_DataType::TYPE_STRING;
-}
+			return PHPExcel_Cell_DataType::TYPE_STRING;
+			
+		}
 
 }

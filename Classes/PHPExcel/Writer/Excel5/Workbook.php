@@ -638,128 +638,169 @@ class PHPExcel_Writer_Excel5_Workbook extends PHPExcel_Writer_Excel5_BIFFwriter
     /**
      * Writes all the DEFINEDNAME records (BIFF8).
      * So far this is only used for repeating rows/columns (print titles) and print areas
-     */
+     */ 
+		private function writeAllDefinedNamesBiff8()
+		{
     
-private function writeAllDefinedNamesBiff8()
-{
-    $chunk = '';
+			$chunk = '';
 
-    // Named ranges
-    if (count($this->phpExcel->getNamedRanges()) > 0) {
+			// Named ranges
+			if(count($this->phpExcel->getNamedRanges()) > 0) 
+			{
+				
         $namedRanges = $this->phpExcel->getNamedRanges();
 
-        foreach ($namedRanges as $namedRange) {
-            // Create absolute coordinate
-            $range = PHPExcel_Cell::splitRange($namedRange->getRange());
+        foreach($namedRanges as $namedRange) 
+				{
+					
+					// Create absolute coordinate
+          $range = PHPExcel_Cell::splitRange($namedRange->getRange());
 
-            for ($i = 0; $i < count($range); $i++) {
-                $range[$i][0] =
-                    '\'' .
-                    str_replace("'", "''", $namedRange->getWorksheet()->getTitle()) .
-                    '\'!' .
-                    PHPExcel_Cell::absoluteCoordinate($range[$i][0]);
+          for($i = 0; $i < count($range); $i++) 
+					{
+						
+						$range[$i][0] =
+              '\'' .
+              str_replace("'", "''", $namedRange->getWorksheet()->getTitle()) .
+              '\'!' .
+              PHPExcel_Cell::absoluteCoordinate($range[$i][0]);
 
-                if (isset($range[$i][1])) {
-                    $range[$i][1] = PHPExcel_Cell::absoluteCoordinate($range[$i][1]);
-                }
-            }
+            if(isset($range[$i][1])) 
+              $range[$i][1] = PHPExcel_Cell::absoluteCoordinate($range[$i][1]);
+                
+          }
 
-            $range = PHPExcel_Cell::buildRange($range);
+          $range = PHPExcel_Cell::buildRange($range);
 
-            // Parse formula
-            try {
-                $error = $this->parser->parse($range);
-                $formulaData = $this->parser->toReversePolish();
+          // Parse formula
+          try 
+					{
+						
+						$error = $this->parser->parse($range);
+            $formulaData = $this->parser->toReversePolish();
 
-                // Make sure tRef3d is of type tRef3dR (0x3A)
-                if (
-                    isset($formulaData[0]) &&
-                    ($formulaData[0] == "\x7A" || $formulaData[0] == "\x5A")
-                ) {
-                    $formulaData = "\x3A" . substr($formulaData, 1);
-                }
+            // Make sure tRef3d is of type tRef3dR (0x3A)
+            if(
+              isset($formulaData[0]) &&
+              ($formulaData[0] == "\x7A" || $formulaData[0] == "\x5A")
+              ) {
+                $formulaData = "\x3A" . substr($formulaData, 1);
+              }
 
-                if ($namedRange->getLocalOnly()) {
-                    // Local scope
-                    $scope = $this->phpExcel->getIndex($namedRange->getScope()) + 1;
-                } else {
-                    // Global scope
-                    $scope = 0;
-                }
+            if($namedRange->getLocalOnly()) {
+                    
+							// Local scope
+              $scope = $this->phpExcel->getIndex($namedRange->getScope()) + 1;
+                
+						} else {
+                    
+							// Global scope
+              $scope = 0;
+                
+						}
 
-                $chunk .= $this->writeData(
-                    $this->writeDefinedNameBiff8(
-                        $namedRange->getName(),
-                        $formulaData,
-                        $scope,
-                        false
-                    )
-                );
-            } catch (PHPExcel_Exception $e) {
-                // Do nothing
-            }
+            $chunk .= $this->writeData(
+              
+							$this->writeDefinedNameBiff8(
+                $namedRange->getName(),
+                $formulaData,
+                $scope,
+                false
+              )
+                
+						);
+            
+					} 
+					catch PHPExcel_Exception $e) 
+					{
+            // Do nothing
+          }
+					
         }
-    }
+				
+			}
 
-    // Total number of sheets
-    $total_worksheets = $this->phpExcel->getSheetCount();
+			// Total number of sheets
+			$total_worksheets = $this->phpExcel->getSheetCount();
 
-    // Write the print titles (repeating rows and columns), if any
-    for ($i = 0; $i < $total_worksheets; ++$i) {
+			// Write the print titles (repeating rows and columns), if any
+			for($i = 0; $i < $total_worksheets; ++$i) 
+			{
+				
         $sheetSetup = $this->phpExcel->getSheet($i)->getPageSetup();
 
         // Simultaneous repeatColumns and repeatRows
-        if (
+        if(
             $sheetSetup->isColumnsToRepeatAtLeftSet() &&
             $sheetSetup->isRowsToRepeatAtTopSet()
         ) {
-            $repeat = $sheetSetup->getColumnsToRepeatAtLeft();
+            
+					$repeat = $sheetSetup->getColumnsToRepeatAtLeft();
+          $colmin = PHPExcel_Cell::columnIndexFromString($repeat[0]) - 1;
+          $colmax = PHPExcel_Cell::columnIndexFromString($repeat[1]) - 1;
+
+          $repeat = $sheetSetup->getRowsToRepeatAtTop();
+          $rowmin = $repeat[0] - 1;
+          $rowmax = $repeat[1] - 1;
+
+          // Construct formula data manually
+          $formulaData = pack('Cv', 0x29, 0x17);
+          $formulaData .= pack('Cvvvvv', 0x3B, $i, 0, 65535, $colmin, $colmax);
+          $formulaData .= pack('Cvvvvv', 0x3B, $i, $rowmin, $rowmax, 0, 255);
+          $formulaData .= pack('C', 0x10);
+
+          $chunk .= $this->writeData(
+                
+						$this->writeDefinedNameBiff8(
+              pack('C', 0x07),
+              $formulaData,
+              $i + 1,
+              true
+            )
+            
+					);
+
+        } elseif (
+            
+					$sheetSetup->isColumnsToRepeatAtLeftSet() ||
+          $sheetSetup->isRowsToRepeatAtTopSet()
+        
+				) {
+            
+						
+					// Columns to repeat
+          if($sheetSetup->isColumnsToRepeatAtLeftSet()) 
+					{
+                
+						$repeat = $sheetSetup->getColumnsToRepeatAtLeft();
             $colmin = PHPExcel_Cell::columnIndexFromString($repeat[0]) - 1;
             $colmax = PHPExcel_Cell::columnIndexFromString($repeat[1]) - 1;
-
-            $repeat = $sheetSetup->getRowsToRepeatAtTop();
-            $rowmin = $repeat[0] - 1;
-            $rowmax = $repeat[1] - 1;
-
-            // Construct formula data manually
-            $formulaData = pack('Cv', 0x29, 0x17);
-            $formulaData .= pack('Cvvvvv', 0x3B, $i, 0, 65535, $colmin, $colmax);
-            $formulaData .= pack('Cvvvvv', 0x3B, $i, $rowmin, $rowmax, 0, 255);
-            $formulaData .= pack('C', 0x10);
-
-            $chunk .= $this->writeData(
-                $this->writeDefinedNameBiff8(
-                    pack('C', 0x07),
-                    $formulaData,
-                    $i + 1,
-                    true
-                )
-            );
-
-        // Either repeatColumns or repeatRows
-        } elseif (
-            $sheetSetup->isColumnsToRepeatAtLeftSet() ||
-            $sheetSetup->isRowsToRepeatAtTopSet()
-        ) {
-            // Columns to repeat
-            if ($sheetSetup->isColumnsToRepeatAtLeftSet()) {
-                $repeat = $sheetSetup->getColumnsToRepeatAtLeft();
-                $colmin = PHPExcel_Cell::columnIndexFromString($repeat[0]) - 1;
-                $colmax = PHPExcel_Cell::columnIndexFromString($repeat[1]) - 1;
-            } else {
-                $colmin = 0;
-                $colmax = 255;
-            }
+            
+					} 
+					else 
+					{
+						
+						$colmin = 0;
+            $colmax = 255;
+            
+					}
 
             // Rows to repeat
-            if ($sheetSetup->isRowsToRepeatAtTopSet()) {
-                $repeat = $sheetSetup->getRowsToRepeatAtTop();
-                $rowmin = $repeat[0] - 1;
-                $rowmax = $repeat[1] - 1;
-            } else {
-                $rowmin = 0;
-                $rowmax = 65535;
-            }
+            if($sheetSetup->isRowsToRepeatAtTopSet()) 
+						{
+							
+							$repeat = $sheetSetup->getRowsToRepeatAtTop();
+              $rowmin = $repeat[0] - 1;
+              $rowmax = $repeat[1] - 1;
+            
+						} 
+						else 
+						{
+							
+							$rowmin = 0;
+              $rowmax = 65535;
+            
+						}
 
             // Construct formula data manually
             $formulaData = pack(
@@ -773,89 +814,108 @@ private function writeAllDefinedNamesBiff8()
             );
 
             $chunk .= $this->writeData(
-                $this->writeDefinedNameBiff8(
-                    pack('C', 0x07),
-                    $formulaData,
-                    $i + 1,
-                    true
-                )
-            );
+                
+							$this->writeDefinedNameBiff8(
+                pack('C', 0x07),
+                $formulaData,
+                $i + 1,
+                true
+                
+							)
+            
+						);
         }
-    }
+    
+			}
 
-    // Write the print areas, if any
-    for ($i = 0; $i < $total_worksheets; ++$i) {
+			// Write the print areas, if any
+			for($i = 0; $i < $total_worksheets; ++$i) 
+			{
+				
         $sheetSetup = $this->phpExcel->getSheet($i)->getPageSetup();
 
-        if ($sheetSetup->isPrintAreaSet()) {
-            $printArea = PHPExcel_Cell::splitRange($sheetSetup->getPrintArea());
-            $countPrintArea = count($printArea);
+        if($sheetSetup->isPrintAreaSet()) 
+				{
+					
+					$printArea = PHPExcel_Cell::splitRange($sheetSetup->getPrintArea());
+          $countPrintArea = count($printArea);
+					$formulaData = '';
 
-            $formulaData = '';
+          for($j = 0; $j < $countPrintArea; ++$j) 
+					{
+						
+						$printAreaRect = $printArea[$j];
 
-            for ($j = 0; $j < $countPrintArea; ++$j) {
-                $printAreaRect = $printArea[$j];
+            $printAreaRect[0] = PHPExcel_Cell::coordinateFromString($printAreaRect[0]);
+            $printAreaRect[1] = PHPExcel_Cell::coordinateFromString($printAreaRect[1]);
 
-                $printAreaRect[0] = PHPExcel_Cell::coordinateFromString($printAreaRect[0]);
-                $printAreaRect[1] = PHPExcel_Cell::coordinateFromString($printAreaRect[1]);
+            $print_rowmin = $printAreaRect[0][1] - 1;
+            $print_rowmax = $printAreaRect[1][1] - 1;
+            $print_colmin = PHPExcel_Cell::columnIndexFromString($printAreaRect[0][0]) - 1;
+            $print_colmax = PHPExcel_Cell::columnIndexFromString($printAreaRect[1][0]) - 1;
 
-                $print_rowmin = $printAreaRect[0][1] - 1;
-                $print_rowmax = $printAreaRect[1][1] - 1;
-                $print_colmin = PHPExcel_Cell::columnIndexFromString($printAreaRect[0][0]) - 1;
-                $print_colmax = PHPExcel_Cell::columnIndexFromString($printAreaRect[1][0]) - 1;
-
-                // Construct formula data manually
-                $formulaData .= pack(
-                    'Cvvvvv',
-                    0x3B,
-                    $i,
-                    $print_rowmin,
-                    $print_rowmax,
-                    $print_colmin,
-                    $print_colmax
-                );
-
-                if ($j > 0) {
-                    $formulaData .= pack('C', 0x10);
-                }
-            }
-
-            $chunk .= $this->writeData(
-                $this->writeDefinedNameBiff8(
-                    pack('C', 0x06),
-                    $formulaData,
-                    $i + 1,
-                    true
-                )
+            // Construct formula data manually
+            $formulaData .= pack(
+              'Cvvvvv',
+              0x3B,
+              $i,
+              $print_rowmin,
+              $print_rowmax,
+              $print_colmin,
+              $print_colmax
             );
-        }
-    }
 
-    // Write autofilters, if any
-    for ($i = 0; $i < $total_worksheets; ++$i) {
-        $sheetAutoFilter = $this->phpExcel->getSheet($i)->getAutoFilter();
+            if($j > 0) 
+              $formulaData .= pack('C', 0x10);
+                
+          }
+
+          $chunk .= $this->writeData(
+            $this->writeDefinedNameBiff8(
+              pack('C', 0x06),
+              $formulaData,
+              $i + 1,
+              true
+            )
+            
+					);
+        
+				}
+			}
+
+			// Write autofilters, if any
+			for($i = 0; $i < $total_worksheets; ++$i) 
+			{
+        
+				$sheetAutoFilter = $this->phpExcel->getSheet($i)->getAutoFilter();
         $autoFilterRange = $sheetAutoFilter->getRange();
 
-        if (!empty($autoFilterRange)) {
-            $rangeBounds = PHPExcel_Cell::rangeBoundaries($autoFilterRange);
+        if(!empty($autoFilterRange)) 
+				{
+					
+					$rangeBounds = PHPExcel_Cell::rangeBoundaries($autoFilterRange);
 
-            // Autofilter built-in name
-            $name = pack('C', 0x0D);
+          // Autofilter built-in name
+          $name = pack('C', 0x0D);
 
-            $chunk .= $this->writeData(
-                $this->writeShortNameBiff8(
-                    $name,
-                    $i + 1,
-                    $rangeBounds,
-                    true
-                )
-            );
-        }
-    }
+          $chunk .= $this->writeData(
+                
+						$this->writeShortNameBiff8(
+              $name,
+              $i + 1,
+              $rangeBounds,
+              true
+            )
+            
+					);
+        
+				}
+			
+			}
 
-    return $chunk;
-}
-
+			return $chunk;
+		
+		}
 
     /**
      * Write a DEFINEDNAME record for BIFF8 using explicit binary formula data

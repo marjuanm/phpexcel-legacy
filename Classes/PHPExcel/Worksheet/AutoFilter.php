@@ -589,22 +589,23 @@ class PHPExcel_Worksheet_AutoFilter
      *
      *    @throws    PHPExcel_Exception
      *    @return PHPExcel_Worksheet_AutoFilter
-     */
+     */   
+		public function showHideRows()
+		{
     
-public function showHideRows()
-{
-    list($rangeStart, $rangeEnd) = PHPExcel_Cell::rangeBoundaries($this->range);
+			list($rangeStart, $rangeEnd) = PHPExcel_Cell::rangeBoundaries($this->range);
 
-    // The heading row should always be visible.
-    $this->workSheet->getRowDimension($rangeStart[1])->setVisible(true);
+			// The heading row should always be visible.
+			$this->workSheet->getRowDimension($rangeStart[1])->setVisible(true);
+			$columnFilterTests = array();
 
-    $columnFilterTests = array();
-
-    foreach ($this->columns as $columnID => $filterColumn) {
-        $rules = $filterColumn->getRules();
+			foreach ($this->columns as $columnID => $filterColumn) {
+        
+				$rules = $filterColumn->getRules();
 
         switch ($filterColumn->getFilterType()) {
-            case PHPExcel_Worksheet_AutoFilter_Column::AUTOFILTER_FILTERTYPE_FILTER:
+            
+						case PHPExcel_Worksheet_AutoFilter_Column::AUTOFILTER_FILTERTYPE_FILTER:
                 $ruleValues = array();
 
                 // Build a list of the filter value selections.
@@ -889,15 +890,19 @@ public function showHideRows()
 
                 $filterColumn->setAttributes(array('maxVal' => $maxVal));
                 break;
-        }
-    }
+				
+				}
+				
+			}
 
-    // Execute the column tests for each row in the AutoFilter range.
-    for ($row = $rangeStart[1] + 1; $row <= $rangeEnd[1]; ++$row) {
-        $result = true;
+			// Execute the column tests for each row in the AutoFilter range.
+			for ($row = $rangeStart[1] + 1; $row <= $rangeEnd[1]; ++$row) {
+        
+				$result = true;
 
         foreach ($columnFilterTests as $columnID => $columnFilterTest) {
-            $cellValue = $this->workSheet->getCell($columnID . $row)->getCalculatedValue();
+            
+						$cellValue = $this->workSheet->getCell($columnID . $row)->getCalculatedValue();
 
             $result = $result &&
                 call_user_func_array(
@@ -909,51 +914,67 @@ public function showHideRows()
             if (!$result) {
                 break;
             }
+						
         }
 
         // Show or hide the row based on the filter result.
         $this->workSheet->getRowDimension($row)->setVisible($result);
-    }
+    
+		}
 
     return $this;
-}
-
-
-
-    /**
-     * Implement PHP __clone to create a deep clone, not just a shallow copy.
-     */
-    public function __clone()
-    {
-        $vars = get_object_vars($this);
-        foreach ($vars as $key => $value) {
-            if (is_object($value)) {
-                if ($key == 'workSheet') {
-                    //    Detach from worksheet
-                    $this->{$key} = null;
-                } else {
-                    $this->{$key} = clone $value;
-                }
-            } elseif ((is_array($value)) && ($key == 'columns')) {
-                //    The columns array of PHPExcel_Worksheet_AutoFilter objects
-                $this->{$key} = array();
-                foreach ($value as $k => $v) {
-                    $this->{$key}[$k] = clone $v;
-                    // attach the new cloned Column to this new cloned Autofilter object
-                    $this->{$key}[$k]->setParent($this);
-                }
-            } else {
-                $this->{$key} = $value;
-            }
+		
+	}
+	
+	/**
+   * Implement PHP __clone to create a deep clone, not just a shallow copy.
+   */
+  public function __clone()
+  {
+        
+		$vars = get_object_vars($this);
+        
+		foreach ($vars as $key => $value) {
+            
+			if (is_object($value)) {
+                
+				if ($key == 'workSheet') {
+                    
+					//    Detach from worksheet
+          $this->{$key} = null;
+                
+				} else {
+          $this->{$key} = clone $value;
         }
-    }
+        
+			} elseif ((is_array($value)) && ($key == 'columns')) {
+                
+				//    The columns array of PHPExcel_Worksheet_AutoFilter objects
+        $this->{$key} = array();
+                
+				foreach ($value as $k => $v) {
+                    
+					$this->{$key}[$k] = clone $v;
+          // attach the new cloned Column to this new cloned Autofilter object
+          $this->{$key}[$k]->setParent($this);
+					
+				}
+      
+			} else {
+        $this->{$key} = $value;
+      }
+        
+		}
+		
+	}
 
-    /**
-     * toString method replicates previous behavior by returning the range if object is
-     *    referenced as a property of its parent.
-     */
-    public function __toString()
-    {
-        return (string) $this->range;
-    }
+  /**
+    * toString method replicates previous behavior by returning the range if object is
+    *    referenced as a property of its parent.
+    */
+  public function __toString()
+  {
+    return (string) $this->range;
+  }
+	
 }

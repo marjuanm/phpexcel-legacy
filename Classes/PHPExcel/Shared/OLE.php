@@ -439,42 +439,44 @@ class PHPExcel_Shared_OLE
     * @param string $ascii The ASCII string to transform
     * @return string The string in Unicode
     */
+		public static function Asc2Ucs($ascii)
+		{
+    
+			$rawname = '';
+			$length = strlen($ascii);
 
-public static function Asc2Ucs($ascii)
-{
-    $rawname = '';
-    $length = strlen($ascii);
-
-    for ($i = 0; $i < $length; ++$i) {
+			for ($i = 0; $i < $length; ++$i) {
         $rawname .= $ascii[$i] . "\x00";
-    }
+			}
 
-    return $rawname;
-}
+			return $rawname;
+			
+		}
 
-/**
- * Utility function
- * Returns a string for the OLE container with the date given
- *
- * @access public
- * @static
- * @param integer|null $date A timestamp
- * @return string The string for the OLE container
- */
-public static function LocalDate2OLE($date = null)
-{
-    if (!isset($date)) {
+		/**
+		* Utility function
+		* Returns a string for the OLE container with the date given
+		*
+		* @access public
+		* @static
+		* @param integer|null $date A timestamp
+		* @return string The string for the OLE container
+		*/
+		public static function LocalDate2OLE($date = null)
+		{
+    
+			if (!isset($date)) {
         return "\x00\x00\x00\x00\x00\x00\x00\x00";
-    }
+			}
 
-    // Factor used for separating numbers into 4-byte parts
-    $factor = 4294967296;
+			// Factor used for separating numbers into 4-byte parts
+			$factor = 4294967296;
 
-    // Days from 1-1-1601 until the beginning of the UNIX era
-    $days = 134774;
+			// Days from 1-1-1601 until the beginning of the UNIX era
+			$days = 134774;
 
-    // Calculate seconds
-    $big_date = $days * 24 * 3600
+			// Calculate seconds
+			$big_date = $days * 24 * 3600
         + gmmktime(
             (int) date("H", $date),
             (int) date("i", $date),
@@ -484,64 +486,68 @@ public static function LocalDate2OLE($date = null)
             (int) date("Y", $date)
         );
 
-    // Convert seconds to 100-nanosecond intervals
-    $big_date *= 10000000;
+			// Convert seconds to 100-nanosecond intervals
+			$big_date *= 10000000;
 
-    $high_part = floor($big_date / $factor);
-    $low_part = floor($big_date - ($high_part * $factor));
+			$high_part = floor($big_date / $factor);
+			$low_part = floor($big_date - ($high_part * $factor));
 
-    // Build the binary result, low part followed by high part
-    $res = '';
+			// Build the binary result, low part followed by high part
+			$res = '';
 
-    for ($i = 0; $i < 4; ++$i) {
+			for ($i = 0; $i < 4; ++$i) {
         $hex = (int) ($low_part % 0x100);
         $res .= pack('C', $hex);
         $low_part = floor($low_part / 0x100);
-    }
+			}
 
-    for ($i = 0; $i < 4; ++$i) {
+			for ($i = 0; $i < 4; ++$i) {
         $hex = (int) ($high_part % 0x100);
         $res .= pack('C', $hex);
         $high_part = floor($high_part / 0x100);
-    }
+			}
 
-    return $res;
-}
+			return $res;
+		
+		}
 
-/**
- * Returns a timestamp from an OLE container's date
- *
- * @access public
- * @static
- * @param string $string A binary string with the encoded date
- * @return integer|PEAR_Error The timestamp corresponding to the string
- */
-public static function OLE2LocalDate($string)
-{
-    if (strlen($string) != 8) {
+		/**
+		* Returns a timestamp from an OLE container's date
+		*
+		* @access public
+		* @static
+		* @param string $string A binary string with the encoded date
+		* @return integer|PEAR_Error The timestamp corresponding to the string
+		*/
+		public static function OLE2LocalDate($string)
+		{
+    
+			if (strlen($string) != 8) {
         return new PEAR_Error("Expecting 8 byte string");
-    }
+    
+			}
 
-    // Factor used for separating numbers into 4-byte parts
-    $factor = 4294967296;
+			// Factor used for separating numbers into 4-byte parts
+			$factor = 4294967296;
 
-    $parts = unpack('Vlow/Vhigh', $string);
+			$parts = unpack('Vlow/Vhigh', $string);
 
-    $low_part  = $parts['low'];
-    $high_part = $parts['high'];
+			$low_part  = $parts['low'];
+			$high_part = $parts['high'];
 
-    $big_date = ($high_part * $factor) + $low_part;
+			$big_date = ($high_part * $factor) + $low_part;
 
-    // Convert 100-nanosecond intervals to seconds
-    $big_date /= 10000000;
+			// Convert 100-nanosecond intervals to seconds
+			$big_date /= 10000000;
 
-    // Days from 1-1-1601 until the beginning of the UNIX era
-    $days = 134774;
+			// Days from 1-1-1601 until the beginning of the UNIX era
+			$days = 134774;
 
-    // Convert to seconds since the beginning of the UNIX era
-    $big_date -= $days * 24 * 3600;
+			// Convert to seconds since the beginning of the UNIX era
+			$big_date -= $days * 24 * 3600;
 
-    return (int) floor($big_date);
-}
+			return (int) floor($big_date);
+
+		}
 
 }

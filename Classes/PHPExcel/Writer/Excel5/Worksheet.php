@@ -835,62 +835,76 @@ class PHPExcel_Writer_Excel5_Worksheet extends PHPExcel_Writer_Excel5_BIFFwriter
      * @param mixed   $calculatedValue  Calculated value
      * @return integer
      */
+		private function writeFormula($row, $col, $formula, $xfIndex, $calculatedValue)
+		{
+    
+			$record = 0x0006; // Record identifier
 
-private function writeFormula($row, $col, $formula, $xfIndex, $calculatedValue)
-{
-    $record = 0x0006; // Record identifier
+			// Initialize possible additional value for STRING record
+			$stringValue = null;
 
-    // Initialize possible additional value for STRING record
-    $stringValue = null;
-
-    // Calculated value
-    if (isset($calculatedValue)) {
-        if (is_bool($calculatedValue)) {
-            // Boolean value
-            $num = pack('CCCvCv', 0x01, 0x00, (int) $calculatedValue, 0x00, 0x00, 0xFFFF);
+			// Calculated value
+			if(isset($calculatedValue)) 
+			{
+				
+				if(is_bool($calculatedValue)) {
+            
+					// Boolean value
+          $num = pack('CCCvCv', 0x01, 0x00, (int) $calculatedValue, 0x00, 0x00, 0xFFFF);
 
         } elseif (is_int($calculatedValue) || is_float($calculatedValue)) {
-            // Numeric value
-            $num = pack('d', $calculatedValue);
+            
+					// Numeric value
+          $num = pack('d', $calculatedValue);
 
         } elseif (is_string($calculatedValue)) {
-            if (array_key_exists($calculatedValue, PHPExcel_Cell_DataType::getErrorCodes())) {
-                // Error value
-                $num = pack('CCCvCv', 0x02, 0x00, self::mapErrorCode($calculatedValue), 0x00, 0x00, 0xFFFF);
+            
+					if(array_key_exists($calculatedValue, PHPExcel_Cell_DataType::getErrorCodes())) {
+                
+						// Error value
+            $num = pack('CCCvCv', 0x02, 0x00, self::mapErrorCode($calculatedValue), 0x00, 0x00, 0xFFFF);
 
-            } elseif ($calculatedValue === '') {
-                // Empty string (BIFF8)
-                $num = pack('CCCvCv', 0x03, 0x00, 0x00, 0x00, 0x00, 0xFFFF);
+          } elseif ($calculatedValue === '') {
+                
+						// Empty string (BIFF8)
+            $num = pack('CCCvCv', 0x03, 0x00, 0x00, 0x00, 0x00, 0xFFFF);
 
-            } else {
-                // Non-empty string value
-                $stringValue = $calculatedValue;
-                $num = pack('CCCvCv', 0x00, 0x00, 0x00, 0x00, 0x00, 0xFFFF);
-            }
+          } else {
+                
+						// Non-empty string value
+            $stringValue = $calculatedValue;
+            $num = pack('CCCvCv', 0x00, 0x00, 0x00, 0x00, 0x00, 0xFFFF);
+            
+					}
 
         } else {
-            // Unexpected calculated value type
-            $num = pack('d', 0x00);
+            
+					// Unexpected calculated value type
+          $num = pack('d', 0x00);
         }
 
-    } else {
+			} else {
         $num = pack('d', 0x00);
-    }
+			}
 
-    $grbit   = 0x03;     // Option flags
-    $unknown = 0x0000;   // Must be zero
+			$grbit   = 0x03;     // Option flags
+			$unknown = 0x0000;   // Must be zero
 
-    // Strip the '=' sign at the beginning of the formula string
-    if ($formula === '' || $formula[0] !== '=') {
-        $this->writeString($row, $col, 'Unrecognised character for formula');
+			// Strip the '=' sign at the beginning of the formula string
+			if($formula === '' || $formula[0] !== '=') {
+        
+				$this->writeString($row, $col, 'Unrecognised character for formula');
         return -1;
-    }
+    
+			}
 
-    $formula = substr($formula, 1);
+			$formula = substr($formula, 1);
 
-    // Parse the formula using Parser.php
-    try {
-        $this->parser->parse($formula);
+			// Parse the formula using Parser.php
+			try 
+			{
+        
+				$this->parser->parse($formula);
         $formula = $this->parser->toReversePolish();
 
         $formlen = strlen($formula);
@@ -899,22 +913,24 @@ private function writeFormula($row, $col, $formula, $xfIndex, $calculatedValue)
         $header = pack('vv', $record, $length);
 
         $data = pack('vvv', $row, $col, $xfIndex)
-              . $num
-              . pack('vVv', $grbit, $unknown, $formlen);
+          . $num
+          . pack('vVv', $grbit, $unknown, $formlen);
 
         $this->append($header . $data . $formula);
 
         // Append STRING record if necessary
-        if ($stringValue !== null) {
+        if($stringValue !== null) 
             $this->writeStringRecord($stringValue);
-        }
 
         return 0;
 
-    } catch (PHPExcel_Exception $e) {
+			} 
+			catch(PHPExcel_Exception $e) 
+			{
         // Preserve original error-handling behavior
-    }
-}
+			}
+
+		}
 
     /**
      * Write a STRING record. This
