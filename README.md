@@ -13,7 +13,7 @@ Nevertheless, I have chosen to maintain and update this library to ensure compat
 
 At present, it's capable of creating basic Excel files in a PHP 8+ environment; however, this has only been tested with older Office formats. It has not been fully tested with modern file formats or current features.
 
-The intention is not to keep the library up-to-date with the latest standards, but rather to provide continuity for legacy applications—specifically those that cannot or do not wish to migrate or rewrite their code, yet still require a way to export data into the Microsoft Excel format.
+The intention is not to keep the library up-to-date with the latest standards, but rather to provide continuity for legacy applications—specifically those that cannot or don't wish to migrate or rewrite their code, yet still require a way to export data into the Microsoft Excel format.
 
 # 🚀 Updates for the latest version (0.1.1):
 
