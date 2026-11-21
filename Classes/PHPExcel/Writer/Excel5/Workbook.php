@@ -711,7 +711,7 @@ class PHPExcel_Writer_Excel5_Workbook extends PHPExcel_Writer_Excel5_BIFFwriter
 						);
             
 					} 
-					catch PHPExcel_Exception $e) 
+					catch (PHPExcel_Exception $e) 
 					{
             // Do nothing
           }
